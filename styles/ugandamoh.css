@@ -43,20 +43,45 @@ ul li {
 }
 
 ul li:before {
-      /* For a round bullet */
-      content:'\2022';
-      /* For a square bullet */
-      /*content:'\25A0';*/
-      display: block;
-      position: relative;
-      max-width: 0px;
-      max-height: 0px;
-      left: -20px;
-      top: -0px;
-      color: #229cbe;
-      font-size: 30px;
-    }
- 
+	/* For a square bullet */
+	content:'\25A0';
+	display: block;
+	position: relative;
+	max-width: 0px;
+	max-height: 0px;
+	left: -20px;
+	top: -1.7px;
+	color: #dd3333;
+	font-size: 20px;
+}
+
+ul > ul li:before  {
+	/* For a round bullet */
+	content:'\2022';
+	/* For a square bullet */
+	/*content:'\25A0';*/
+	display: block;
+	position: relative;
+	max-width: 0px;
+	max-height: 0px;
+	left: -20px;
+	top: -0px;
+	color: #dd3333;
+	font-size: 30px;
+}
+
+ul:nth-child(1)> ul li:before {
+	/* For a round hollow bullet */
+	content:'\00ba';
+	display: block;
+	position: relative;
+	max-width: 0px;
+	max-height: 0px;
+	left: -20px;
+	top: 5px;
+	color: #dd3333;
+	font-size: 20px;
+}
 ol {
 	margin: 10px 0;
 }
