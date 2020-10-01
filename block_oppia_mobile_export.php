@@ -6,6 +6,7 @@
  * @package block_oppia_mobile_export
  */
 require_once($CFG->dirroot . '/blocks/oppia_mobile_export/lib.php');
+require_once($CFG->dirroot . '/blocks/oppia_mobile_export/version.php');
 
 class block_oppia_mobile_export extends block_base {
 	
@@ -23,7 +24,7 @@ class block_oppia_mobile_export extends block_base {
     
     function get_content() {
         global $USER, $CFG, $COURSE;
-
+        
         if ($this->content !== NULL || !isset($COURSE->id) || $COURSE->id == 1) {
             return $this->content;
         }
@@ -51,7 +52,7 @@ class block_oppia_mobile_export extends block_base {
         	if ($s->defaultserver != 0){
         		$this->content->text .= "selected='selected'";
         	}
-        	$this->content->text .= ">".$s->servername. " (".$s->username.")</option>";
+        	$this->content->text .= ">".$s->servername. " (".$s->url.")</option>";
         }
         if (count($servers) == 0){
         	$this->content->text .= "<option value='default' selected='selected'>". $CFG->block_oppia_mobile_export_default_server ."</option>";
@@ -72,6 +73,14 @@ class block_oppia_mobile_export extends block_base {
 	        $this->content->text .= "</select>";
 	        $this->content->text .= "</p>";
         }
+        
+        $this->content->text .= "<p>".get_string('course_status','block_oppia_mobile_export')."<br/>";
+        $this->content->text .= "<select name=\"course_status\" class=\"custom-select\" style=\"width:100%;\">";
+        $this->content->text .= "<option value='draft'>".get_string('course_status_draft','block_oppia_mobile_export')."</option>";
+        $this->content->text .= "<option value='live'>".get_string('course_status_live','block_oppia_mobile_export')."</option>";
+        $this->content->text .= "</select>";
+        $this->content->text .= "</p>";
+        
         $this->content->text .= "<p><input type='submit' name='submit' class=\"btn btn-primary\" value='".get_string('oppia_block_export_button','block_oppia_mobile_export')."'>";
         $this->content->text .= "</form>";
 
@@ -97,11 +106,10 @@ class block_oppia_mobile_export extends block_base {
         $this->content->text .= '</div></div>';
         
         $this->content->text .= "<hr />";
-        $this->content->footer = '<a href="https://digital-campus.org/oppiamobile/overview/">OppiaMobile</a>';
+        $this->content->footer = '<a href="https://digital-campus.org/oppiamobile/">OppiaMobile</a> '. get_string('release', 'block_oppia_mobile_export');
         if (empty($this->instance)) {
             return $this->content;
         }
-           
 
         return $this->content;
     }

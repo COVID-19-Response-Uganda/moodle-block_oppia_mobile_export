@@ -160,7 +160,7 @@ function extractImageFile($content, $component, $filearea, $itemid, $contextid, 
 	//find if any images/links exist
 	//preg_match_all('((@@PLUGINFILE@@/(?P<filenames>[\w\.\-\_[:space:]]*)[\"|\']))',$content,$files_tmp, PREG_OFFSET_CAPTURE);
 		
-	preg_match_all('((@@PLUGINFILE@@/(?P<filenames>[^\"\']*)))',$content,$files_tmp, PREG_OFFSET_CAPTURE);
+	preg_match_all('((@@PLUGINFILE@@/(?P<filenames>[^\"\'\?]*)))',$content,$files_tmp, PREG_OFFSET_CAPTURE);
 	
 	if(!isset($files_tmp['filenames']) || count($files_tmp['filenames']) == 0){
 		return false;
@@ -185,6 +185,7 @@ function extractImageFile($content, $component, $filearea, $itemid, $contextid, 
 		$file = $fs->get_file($fileinfo['contextid'], $fileinfo['component'], $fileinfo['filearea'],
 				$fileinfo['itemid'], $fileinfo['filepath'], urldecode($fileinfo['filename']));
 		$result = copyFile($file, $component, $filearea, $itemid, $contextid, $course_root, $cmid);
+		echo "Result: ". $result ."<br/>";
 		if ($result != false){
 			$lastimg = $result;
 		}
@@ -444,28 +445,4 @@ function recurse_copy($src,$dst) {
 	}
 	closedir($dir);
 }
-
-function create_default_course_gamification(&$xmlDoc,&$node){
-	$default_gamification_events = [
-			'quiz_first_attempt' => 20,                     
-			'quiz_attempt' => 10,                          
-			'quiz_first_attempt_threshold'  => 100,         
-			'quiz_first_attempt_bonus' => 50,               
-			'activity_completed' => 10,                    
-			'media_started' => 20,                         
-			'media_playing_interval' => 30,                
-			'media_playing_points_per_interval' => 5,      
-			'media_max_points' => 200,                     
-			'course_downloaded' => 50
-			
-		];
-	foreach($default_gamification_events as $event => $points){
-		$temp = $xmlDoc->createElement("event");
-		$temp->appendChild($xmlDoc->createAttribute("name"))->appendChild($xmlDoc->createTextNode($event));
-		$temp->appendChild($xmlDoc->createTextNode($points));
-		$node->appendChild($temp);
-		
-	}
-}
-
 ?>

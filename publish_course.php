@@ -18,13 +18,13 @@ require_once($CFG->dirroot . '/blocks/oppia_mobile_export/activity/resource.php'
 
 require_once($CFG->libdir.'/componentlib.class.php');
 
-$id = required_param('id',PARAM_INT);
-$file = required_param('file',PARAM_TEXT);
-$tags = cleanTagList(required_param('tags',PARAM_TEXT));
-$server = required_param('server',PARAM_TEXT);
-$username = required_param('username',PARAM_TEXT);
-$password = required_param('password',PARAM_TEXT);
-$is_draft = optional_param('is_draft','False', PARAM_TEXT);
+$id = required_param('id', PARAM_INT);
+$file = required_param('file', PARAM_TEXT);
+$tags = cleanTagList(required_param('tags', PARAM_TEXT));
+$server = required_param('server', PARAM_TEXT);
+$username = required_param('username', PARAM_TEXT);
+$password = required_param('password', PARAM_TEXT);
+$course_status = required_param('course_status', PARAM_TEXT);
 
 $course = $DB->get_record('course', array('id'=>$id));
 
@@ -55,7 +55,14 @@ add_publishing_log($server_connection->url, $USER->id, $id,  "api_publish_start"
 
 echo $OUTPUT->header();
 
-echo "<h2>Publishing course</h2>";
+echo "<h2>";
+if ($course_status == 'draft'){
+    echo get_string('publishing_header_draft','block_oppia_mobile_export');
+} else {
+    echo get_string('publishing_header_live','block_oppia_mobile_export');
+}
+echo "</h2>";
+
 flush_buffers();
 
 if (trim($username) == ''){
@@ -91,6 +98,11 @@ if (substr($server_connection->url, -strlen('/'))!=='/'){
 	$server_connection->url .= '/';
 }
 
+if ($course_status == 'draft'){
+    $is_draft = "true";
+} else {
+    $is_draft = "false";
+}
 $post =  array('username' => $username,
 				'password' => $password,
 				'is_draft' => $is_draft,
@@ -100,8 +112,12 @@ $post =  array('username' => $username,
 $curl = curl_init();
 curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1 );
 curl_setopt($curl, CURLOPT_URL, $server_connection->url ."api/publish/" );
-curl_setopt($curl, CURLOPT_POST,1);
+curl_setopt($curl, CURLOPT_POST, true);
+curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
 curl_setopt($curl, CURLOPT_POSTFIELDS, $post);
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+
 $result = curl_exec($curl);
 $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
@@ -153,6 +169,13 @@ else{
 		foreach($messages as $msg){
 			echo '<div class="export-results '.$msg['tags'].'">'.$msg['message'].'</div>';
 			add_publishing_log($server_connection->url, $USER->id, $id,  "api_publish_response_message", $msg['tags'].": ".$msg['message']);
+		}
+	}
+	if (array_key_exists('errors', $json_response)){
+		$errors = $json_response['errors'];
+		foreach($errors as $err){
+			echo '<div class="export-results warning">'.$err.'</div>';
+			add_publishing_log($server_connection->url, $USER->id, $id,  "api_publish_response_message", "error: " . $err);
 		}
 	}
 	

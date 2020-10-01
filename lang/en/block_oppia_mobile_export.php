@@ -24,7 +24,10 @@
  */
 
 
+
 $string['pluginname'] = 'Oppia Mobile Export';
+$string['release'] = 'v1.1.1';
+
 $string['oppia_mobile_export:addinstance'] = 'Add a new Oppia export block';
 
 $string['oppia_block_api'] = 'Current OppiaMobile API:';
@@ -34,12 +37,14 @@ $string['oppia_block_export2print_button'] = 'Export to print';
 
 $string['oppia_block_export_servers'] = 'OppiaMobile Servers';
 
+$string['course_status'] = 'Course Status';
+$string['course_status_live'] = 'Live';
+$string['course_status_draft'] = 'Draft/testing';
+
 $string['course_icon_width'] = 'Course icon width';
 $string['course_icon_height'] = 'Course icon height';
 
 $string['default_server'] = 'Default server';
-$string['default_username'] = 'Default username';
-$string['default_api_key'] = 'Default api_key';
 
 $string['default_lang'] = 'Default language';
 $string['default_lang_info'] = 'Language code in ISO-639 format';
@@ -68,10 +73,6 @@ $string['server_form_name'] = 'Server Name (your reference)';
 $string['server_form_name_error_none'] = 'Please enter a reference name for your server.';
 $string['server_form_url'] = 'URL';
 $string['server_form_url_error_none'] = 'Please enter the url to the server.';
-$string['server_form_username'] = 'Username';
-$string['server_form_username_error_none'] = 'Please enter your OppiaMobile username for the server';
-$string['server_form_apikey'] = 'API Key';
-$string['server_form_apikey_error_none'] = 'Please enter your OppiaMobile API key for the server';
 
 $string['cleanup_start'] = 'Starting cleanup now...';
 $string['cleanup_end'] = 'Cleanup completed';
@@ -164,13 +165,18 @@ $string['publish_field_draft_info'] = 'Tick the box if the course is to be a \'d
 $string['publish_field_password'] = 'Password';
 $string['publish_field_tags'] = 'Categories (for classifying course)';
 $string['publish_field_username'] = 'Username';
-$string['publish_heading'] = 'Publish to OppiaMobile server';
 $string['publish_message_201'] = 'Your course has now been published on the OppiaMobile server';
 $string['publish_message_400'] = 'Bad request. This is likely due to missing fields/data. Your course has not been published.';
 $string['publish_message_401'] = 'Unauthorized. Either you entered an incorrect username/password, or you do not have permissions to publish on the specified OppiaMobile server. Your course has not been published.';
 $string['publish_message_405'] = 'Invalid HTTP request type - this probably needs a programmer to look into. Your course has not been published.';
 $string['publish_message_500'] = 'A server error occured during publishing. This could be a permissions issue, please refer to your OppiaMobile server administrator. Your course has not been published.';
+$string['publish_heading'] = 'Publish to OppiaMobile server';
 $string['publish_text'] = 'To publish your course directly on OppiaMobile ({$a}), please complete your OppiaMobile server login details below.<br/>Check with your OppiaMobile administrator if you are unsure whether you have permissions to publish on the server';
+$string['publish_heading_draft'] = 'Push draft course to OppiaMobile server';
+$string['publish_text_draft'] = 'To push your draft course directly on OppiaMobile ({$a}), please complete your OppiaMobile server login details below.<br/>Check with your OppiaMobile administrator if you are unsure whether you have permissions to publish on the server';
+
+$string['publishing_header_live'] = "Publishing Course";
+$string['publishing_header_draft'] = "Pushing Draft Course";
 
 $string['settings_avoid_push_quizzes'] = 'Don\'t push quizzes info to the Oppia server in the export process';
 $string['settings_avoid_push_quizzes_info'] = 'Avoid pushing quizzes info to the Oppia server in the export process. If enabled, be sure that the Oppia server is capable of processing the full course including quizzes.';

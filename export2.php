@@ -29,10 +29,15 @@ $DEFAULT_LANG = required_param('default_lang', PARAM_TEXT);
 $tags = required_param('coursetags',PARAM_TEXT);
 $tags = cleanTagList($tags);
 $server = required_param('server',PARAM_TEXT);
+$course_status = required_param('course_status', PARAM_TEXT);
 
 $course = $DB->get_record('course', array('id'=>$id));
 //we clean the shortname of the course (the change doesn't get saved in Moodle)
 $course->shortname = cleanShortname($course->shortname);
+
+if ($course_status == 'draft'){
+    $course->shortname = $course->shortname."-draft";
+}
 
 $PAGE->set_url('/blocks/oppia_mobile_export/export2.php', array('id' => $id));
 context_helper::preload_course($id);
@@ -195,8 +200,9 @@ foreach ($sectionmods as $modnumber) {
 		continue;
 	}
 	$mod = $mods[$modnumber];
-		
-	if($mod->modname == 'page' && $mod->uservisible == 1){
+	
+	
+	if($mod->modname == 'page' && $mod->visible == 1){
 		echo "<p>".$mod->name."</p>";
 		$page = new mobile_activity_page();
 		$page->courseroot = $course_root;
@@ -205,7 +211,7 @@ foreach ($sectionmods as $modnumber) {
 		$page->process();
 		$page->getXML($mod,$i,false,$meta,$xmlDoc);
 	}
-	if($mod->modname == 'quiz' && $mod->uservisible == 1){
+	if($mod->modname == 'quiz' && $mod->visible == 1){
 		echo "<p>".$mod->name."</p>";
 
 		$quiz = new mobile_activity_quiz();
@@ -236,7 +242,7 @@ foreach ($sectionmods as $modnumber) {
 			$quiz->getXML($mod,$i,true,$meta,$xmlDoc);
 		}
 	}
-	if($mod->modname == 'feedback' && $mod->uservisible == 1){
+	if($mod->modname == 'feedback' && $mod->visible == 1){
 		echo $mod->name."<br/>";
 		$feedback = new mobile_activity_feedback();
 		$configArray = Array(
@@ -334,7 +340,11 @@ foreach($sections as $sect) {
 			
 			$mod = $mods[$modnumber];
 			
-			if($mod->modname == 'page' && $mod->uservisible == 1){
+			echo("<pre>");
+			// print_r($mod);
+			echo("</pre>");
+			
+			if($mod->modname == 'page' && $mod->visible == 1){
 				echo $mod->name."<br/>";
 				$page = new mobile_activity_page();
 				$page->courseroot = $course_root;
@@ -345,7 +355,7 @@ foreach($sections as $sect) {
 				$act_orderno++;
 			}
 			
-			if($mod->modname == 'quiz' && $mod->uservisible == 1){
+			if($mod->modname == 'quiz' && $mod->visible == 1){
 				echo $mod->name."<br/>";
 				
 				$quiz = new mobile_activity_quiz();
@@ -380,7 +390,7 @@ foreach($sections as $sect) {
 				}
 			}
 			
-			if($mod->modname == 'resource' && $mod->uservisible == 1){
+			if($mod->modname == 'resource' && $mod->visible == 1){
 				echo $mod->name."<br/>";
 				$resource = new mobile_activity_resource();
 				$resource->courseroot = $course_root;
@@ -391,7 +401,7 @@ foreach($sections as $sect) {
 				$act_orderno++;
 			}
 			
-			if($mod->modname == 'url' && $mod->uservisible == 1){
+			if($mod->modname == 'url' && $mod->visible == 1){
 				echo $mod->name."<br/>";
 				$url = new mobile_activity_url();
 				$url->courseroot = $course_root;
@@ -402,7 +412,7 @@ foreach($sections as $sect) {
 				$act_orderno++;
 			}
 			
-			if($mod->modname == 'feedback' && $mod->uservisible == 1){
+			if($mod->modname == 'feedback' && $mod->visible == 1){
 				echo $mod->name."<br/>";
 				$feedback = new mobile_activity_feedback();
 				$configArray = Array(
@@ -449,12 +459,6 @@ if(count($MOBILE_LANGS) == 0){
 	$langs->appendChild($temp);
 }
 $meta->appendChild($langs);
-
-// add the gamification default values
-$gamification = $xmlDoc->createElement("gamification");
-$gameNode = create_default_course_gamification($xmlDoc,$gamification);
-$meta->appendChild($gamification);
-
 
 // add media includes
 if(count($MEDIA) > 0){
@@ -524,8 +528,13 @@ if (!$xml->schemaValidate('./oppia-schema.xsd')) {
 	echo "<input type='hidden' name='server' value='".$server."'>";
 	echo "<input type='hidden' name='file' value='".$a->zip."'>";
 	
-	echo "<h2>".get_string('publish_heading','block_oppia_mobile_export')."</h2>";
-	echo "<p>".get_string('publish_text','block_oppia_mobile_export',$server_connection->url)."</p>";
+	if ($course_status == 'draft'){
+    	echo "<h2>".get_string('publish_heading_draft','block_oppia_mobile_export')."</h2>";
+    	echo "<p>".get_string('publish_text_draft','block_oppia_mobile_export',$server_connection->url)."</p>";
+	} else {
+	    echo "<h2>".get_string('publish_heading','block_oppia_mobile_export')."</h2>";
+	    echo "<p>".get_string('publish_text','block_oppia_mobile_export',$server_connection->url)."</p>";
+	}
 	
 	echo "<p>".get_string('publish_field_username','block_oppia_mobile_export')."<br/>";
 	echo "<input type='text' name='username' value=''></p>";
@@ -535,15 +544,8 @@ if (!$xml->schemaValidate('./oppia-schema.xsd')) {
 	echo "<p>".get_string('publish_field_tags','block_oppia_mobile_export')."<br/>";
 	echo "<input type='text' name='tags' value='".$tags."' size='100'></p>";
 	
-	$is_draft = get_oppiaconfig($COURSE->id,'is_draft','True');
-	echo "<p><input type='checkbox' name='is_draft' value='True'";
-	if($is_draft == 'True'){
-		echo "checked='checked'/>";
-	} else {
-		echo "/>";
-	}
-	echo get_string('publish_field_draft','block_oppia_mobile_export')."<br/>";
-	echo get_string('publish_field_draft_info','block_oppia_mobile_export')."</p>";
+	echo "<input type='hidden' name='course_status' value='".$course_status."'>";
+	
 	echo "<p><input type='submit' name='submit' value='Publish'></p>";
 	echo "</form>";
 	
