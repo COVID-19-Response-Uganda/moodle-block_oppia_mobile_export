@@ -1,7 +1,7 @@
 .project
 .buildpath
 .scannerwork
-tools/
 .settings/*
 output/
-sonarcloud
+/sonarcloud
+/tools/

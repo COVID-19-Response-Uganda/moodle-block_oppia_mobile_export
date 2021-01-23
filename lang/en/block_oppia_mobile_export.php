@@ -26,7 +26,8 @@
 
 
 $string['pluginname'] = 'Oppia Mobile Export';
-$string['release'] = 'v1.1.3';
+$string['release'] = 'v1.2.3';
+
 
 $string['oppia_mobile_export:addinstance'] = 'Add a new Oppia export block';
 
@@ -62,12 +63,13 @@ $string['debug'] = 'Debug mode';
 $string['debug_info'] = 'Show extended output info when exporting';
 
 $string['servers_current'] = 'Your current OppiaMobile servers';
-$string['servers_add'] = 'Add new OppiaMobile server connection';
+$string['servers_add'] = 'Add OppiaMobile server connection';
 $string['servers_none'] = 'You don\'t current have any OppiaMobile server connections set up. Add one using the form below.';
 $string['servers_block_none'] = 'You don\'t current have any OppiaMobile server connections set up. <a href="{$a}">Add one now</a>.';
-$string['servers_block_add'] = '<a href="{$a}">Add new server connection</a>.';
+$string['servers_block_add'] = '<a href="{$a}">Add/delete server connection</a>.';
 $string['servers_block_select_connection'] = 'Select connection:';
 $string['server_not_owner'] = 'The selected OppiaMobile server connection does not belong to your account.';
+$string['server_delete'] = 'delete';
 
 $string['server_form_name'] = 'Server Name (your reference)';
 $string['server_form_name_error_none'] = 'Please enter a reference name for your server.';
@@ -82,13 +84,16 @@ $string['error_creating_quiz'] = 'There was an error creating the quiz, please t
 $string['error_edit_page'] = 'Image not found, <a target="_blank" href="{$a}">please edit the activity</a>';
 $string['error_feedback_no_questions'] = 'Not exporting feedback as doesn\'t contain any supported questions.';
 $string['error_file_delete'] = 'Unable to delete the file';
-$string['error_file_not_found'] = 'File not found: {$a}';
+$string['error_file_not_found'] = 'File not found: <code>{$a}</code>';
 $string['error_media_attributes'] = 'You must supply digest, download_url and filename for every media object';
 $string['error_quiz_no_questions'] = 'Not exporting quiz as doesn\'t contain any supported questions.';
 $string['error_section_no_activities'] = 'Not exporting section as doesn\'t contain any supported activities.';
 $string['error_xml_invalid'] = 'Errors in course XML Found!';
+$string['error_xml_notfound'] = 'XML module for the course not found.';
 $string['error_style_copy'] = 'Failed to copy stylesheet.';
 $string['error_exporting'] = 'Error exporting course';
+$string['error_not_supported'] = 'Activity not supported';
+$string['error_parsing_html'] = 'Error parsing HTML contents';
 $string['error_exporting_no_sections'] = 'The course cannot be exported as there are no sections. This can happen if the section has the summary field empty or if none of the sections contain any supported activities, that is usually because of them not having the summary field completed too. Please check your activities\' summaries and try again.';
 
 $string['export_title'] = 'Export - step {$a->stepno}: {$a->coursename}';
@@ -110,6 +115,10 @@ $string['export_priority_title'] = 'Course Priority';
 $string['export_priority_label'] = 'Priority';
 $string['export_priority_desc'] = 'This is the relative weight given to a course to help determine the ordering in which it will appear on the mobile (10 = highest priority)';
 
+$string['export_server_error'] ='Unable to get server info (is it correctly configured and running?)';
+$string['export_server_version'] = '<strong>Current server version:</strong> <code>{$a}</code>' ;
+$string['export_method'] = 'Quiz export method';
+
 $string['export_course_tags_title'] = 'Course Categories';
 $string['export_course_tags_desc'] = 'Categories that will be used to classify the course on the OppiaMobile server, separate each category by a comma';
 
@@ -123,7 +132,9 @@ $string['export_sequencing_course'] = 'Sequencing through whole course';
 $string['export_sequencing_section'] = 'Sequencing within a section';
 $string['export_sequencing_label'] = 'Sequencing mode';
 
+$string['export_sections_start'] = 'Exporting course Sections...';
 $string['export_section_title'] = 'Exporting Section: {$a}';
+$string['export_sections_finish'] = 'Finished exporting activities and sections';
 $string['export_xml_valid_start'] = 'Validating course XML file...';
 $string['export_xml_validated'] = 'validated';
 $string['export_course_xml_created'] = 'Exported course XML file';
@@ -132,7 +143,7 @@ $string['export_style_resources'] = 'Copying style resources';
 $string['export_export_complete'] = 'Course export complete';
 $string['export_export_compressed'] = 'Compressed file';
 $string['export_download_intro'] = 'You can also download the course zip file here, but this should only be used for testing/development purposes. For live deployment, publish the file to the Oppia server first and download the course zip from there.';
-$string['export_download'] = 'Download exported course: <a href="{$a->zip}">{$a->coursename}</a>';
+$string['export_download'] = 'Download exported course';
 
 $string['export_cleanup'] = 'Cleanup files';
 
@@ -141,9 +152,11 @@ $string['export_advice_desc'] = 'Although your course has been exported you may 
 $string['export_preview_download'] = 'Download exported course preview at <a href="{$a->zip}">{$a->coursename}</a>';
 $string['export_preview_quiz'] = '<a href="{$a->link}" target="_blank">View all quiz questions</a>';
 
-$string['export_file_trying'] = 'Trying file: {$a}';
-$string['export_file_success'] = 'File: {$a} successfully exported';
-$string['export_image_success'] = 'Image: {$a} successfully exported';
+$string['export_file_trying'] = 'Trying file: <code>{$a}</code>';
+$string['export_file_success'] = 'File: <code>{$a}</code> successfully exported';
+$string['export_image_success'] = 'Image: <code>{$a}</code> successfully exported';
+
+$string['export_media_missing'] = 'Some media files included in your course have not been uploaded to the OppiaMobile server yet. To be able to upload the contents on OppiaMobile ({$a}), please complete your OppiaMobile server login details below:';
 
 $string['export_quiz_skip'] = 'Skipping quiz since contains no questions';
 $string['export_quiz_skip_essay'] = 'Skipping essay question';
@@ -175,9 +188,19 @@ $string['publish_text'] = 'To publish your course directly on OppiaMobile ({$a})
 $string['publish_heading_draft'] = 'Push draft course to OppiaMobile server';
 $string['publish_text_draft'] = 'To push your draft course directly on OppiaMobile ({$a}), please complete your OppiaMobile server login details below.<br/>Check with your OppiaMobile administrator if you are unsure whether you have permissions to publish on the server';
 
+$string['publish_btn'] = "Publish";
 $string['publishing_header_live'] = "Publishing Course";
 $string['publishing_header_draft'] = "Pushing Draft Course";
 
 $string['settings_avoid_push_quizzes'] = 'Don\'t push quizzes info to the Oppia server in the export process';
 $string['settings_avoid_push_quizzes_info'] = 'Avoid pushing quizzes info to the Oppia server in the export process. If enabled, be sure that the Oppia server is capable of processing the full course including quizzes.';
 
+$string['missing_video_poster'] = 'Warning: Missing "poster" image for media element.';
+$string['video_included'] = 'Video included:';
+
+$string['media_files_size'] = 'Size';
+$string['media_files_digest'] = 'Digest';
+$string['media_files_length'] = 'Length';
+$string['media_files_not_uploaded'] = 'Not uploaded to the server yet.';
+$string['media_files_request_error'] = 'Error processing request.';
+$string['media_files_title'] = 'Pushing local media files';

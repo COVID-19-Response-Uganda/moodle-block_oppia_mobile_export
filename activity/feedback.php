@@ -1,17 +1,22 @@
 <?php
 
-class mobile_activity_feedback extends mobile_activity {
+class MobileActivityFeedback extends MobileActivity {
     
     private $supported_types = array('multichoicerated', 'textarea', 'multichoice', 'numeric', 'textfield');
     private $courseversion;
     private $summary;
     private $shortname;
     private $content = "";
-    private $feedback_image = null;
     private $is_valid = true; //i.e. doesn't only contain essay or random questions.
     private $no_questions = 0; // total no of valid questions
     private $configArray = array(); // config (quiz props) array
-    
+
+
+    public function __construct(){ 
+        $this->component_name = 'mod_feedback';
+    }
+
+
     function init($shortname, $summary, $courseversion, $configArray){
         $this->shortname = strip_tags($shortname);
         $this->summary = $summary;
@@ -29,9 +34,8 @@ class mobile_activity_feedback extends mobile_activity {
     }
     
     function preprocess(){
-        global $DB,$CFG,$USER;
+        global $DB;
         $cm = get_coursemodule_from_id('feedback', $this->id);
-        $context = context_module::instance($cm->id);
         $feedback = $DB->get_record('feedback', array('id'=>$cm->instance), '*', MUST_EXIST);
         
         $select = 'feedback = ?';
@@ -62,17 +66,10 @@ class mobile_activity_feedback extends mobile_activity {
         $params = array($feedback->id);
         $feedbackitems = $DB->get_records_select('feedback_item', $select, $params, 'position');
         
-        $filename = extractImageFile($feedback->intro,'mod_feedback','intro','0',
-            $context->id,$this->courseroot,$cm->id);
-        
-        if($filename){
-            $this->quiz_image = "/images/".resizeImage($this->courseroot."/".$filename,
-                $this->courseroot."/images/".$cm->id,
-                $CFG->block_oppia_mobile_export_thumb_width,
-                $CFG->block_oppia_mobile_export_thumb_height);
-            //delete original image
-            unlink($this->courseroot."/".$filename) or die(get_string('error_file_delete','block_oppia_mobile_export'));
-        }
+
+
+        // get the image from the intro section
+        $this->extractThumbnailFromIntro($feedback->intro, $cm->id);
         
         $quizprops = array("courseversion" => $this->courseversion);
         
@@ -201,42 +198,21 @@ class mobile_activity_feedback extends mobile_activity {
     
     
     function export2print(){
-        global $DB,$CFG,$USER,$QUIZ_CACHE;
-        $cm = get_coursemodule_from_id('feedback', $this->id);
+        // do nothing
     }
     
-    function getXML($mod, $counter, $activity=true, &$node, &$xmlDoc){
+    function getXML($mod, $counter, &$node, &$xmlDoc, $activity=true){
         global $DEFAULT_LANG;
-        $act = $xmlDoc->createElement("activity");
-        $act->appendChild($xmlDoc->createAttribute("type"))->appendChild($xmlDoc->createTextNode($mod->modname));
-        $act->appendChild($xmlDoc->createAttribute("order"))->appendChild($xmlDoc->createTextNode($counter));
-        $act->appendChild($xmlDoc->createAttribute("digest"))->appendChild($xmlDoc->createTextNode($this->md5));
         
-        $title = extractLangs($mod->name);
-        if(is_array($title) && count($title)>0){
-            foreach($title as $l=>$t){
-                $temp = $xmlDoc->createElement("title");
-                $temp->appendChild($xmlDoc->createTextNode(strip_tags($t)));
-                $temp->appendChild($xmlDoc->createAttribute("lang"))->appendChild($xmlDoc->createTextNode($l));
-                $act->appendChild($temp);
-            }
-        } else {
-            $temp = $xmlDoc->createElement("title");
-            $temp->appendChild($xmlDoc->createTextNode(strip_tags($mod->name)));
-            $temp->appendChild($xmlDoc->createAttribute("lang"))->appendChild($xmlDoc->createTextNode($DEFAULT_LANG));
-            $act->appendChild($temp);
-        }
-        
+        $act = $this->getActivityNode($xmlDoc, $mod, $counter);
+        $this->addLangXMLNodes($xmlDoc, $act, $mod->name, "title");
+        $this->addThumbnailXMLNode($xmlDoc, $act);
+
         $temp = $xmlDoc->createElement("content");
         $temp->appendChild($xmlDoc->createTextNode($this->content));
-        $temp->appendChild($xmlDoc->createAttribute("lang"))->appendChild($xmlDoc->createTextNode("en"));
+        $temp->appendChild($xmlDoc->createAttribute("lang"))->appendChild($xmlDoc->createTextNode($DEFAULT_LANG));
         $act->appendChild($temp);
         
-        if($this->feedback_image){
-            $temp = $xmlDoc->createElement("image");
-            $temp->appendChild($xmlDoc->createAttribute("filename"))->appendChild($xmlDoc->createTextNode($this->feedback_image));
-            $act->appendChild($temp);
-        }
         $node->appendChild($act);
     }
     
