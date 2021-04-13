@@ -26,7 +26,7 @@
 
 
 $string['pluginname'] = 'Oppia Mobile Export';
-$string['release'] = 'v1.2.3';
+$string['release'] = 'v1.2.4';
 
 
 $string['oppia_mobile_export:addinstance'] = 'Add a new Oppia export block';
@@ -204,3 +204,8 @@ $string['media_files_length'] = 'Length';
 $string['media_files_not_uploaded'] = 'Not uploaded to the server yet.';
 $string['media_files_request_error'] = 'Error processing request.';
 $string['media_files_title'] = 'Pushing local media files';
+
+$string['duplicated_digest_title'] = 'Error: Duplicated digests';
+$string['duplicated_digest_description'] = 'There are identical activities in your course that have the same digest:';
+$string['duplicated_digest_footer'] = 'Please, correct these issues and export your course again, see <a href="https://oppiamobile.readthedocs.io/en/latest/support/troubleshooting/block.html">Troubleshooting Moodle Oppia Export Block</a> for more help.';
+
